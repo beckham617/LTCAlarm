@@ -1,0 +1,16 @@
+{
+	"manifest_version": 2,
+	"content_security_policy": "script-src 'self' https://ajax.googleapis.com; object-src 'self'",
+	"name": "ltc实时行情测试版",
+	"version": "0.1",
+	"description": "显示各平台ltc实时交易行情",
+	"permissions": [
+		"tabs",
+		"https://*/*",
+		"notifications"
+	],
+	"browser_action": {
+		"default_popup": "popup.html"
+	}
+}
+
