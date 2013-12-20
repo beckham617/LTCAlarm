@@ -1,68 +1,52 @@
-$(function() {
-	getOKCoinTicker();
-	getBterTicker();
-	getFXBTCTicker();
+$(function(){
+	for(var i in config){
+		var conf = config[i];
+		$("#ticker").append('<tr id="'+conf.name+'"><td class="name"><a target="_blank" href="'+conf.site+'">'+conf.name+'</a></td><td class="last">-</td><td class="buy">-</td><td class="sell">-</td><td class="high">-</td><td class="low">-</td><td class="vol">-</td></tr>');
+		getTicker(conf);
+	}
 });
 
-function getOKCoinTicker(){
+function getTicker(conf){
 	$.ajax({
-			type: 'GET',
-			url: "https://www.okcoin.com/api/ticker.do",
-			data: {"symbol":"ltc_cny"},
-			dataType: 'json',
-			success: function (data) {
-				var t=data.ticker;
-				var tr = $("<tr></tr>");
-				tr.append($("<td>OKCoin</td>"))
-				tr.append($("<td>"+t.last+"</td>"))
-				tr.append($("<td>"+t.buy+"</td>"))
-				tr.append($("<td>"+t.sell+"</td>"))
-				tr.append($("<td>"+t.high+"</td>"))
-				tr.append($("<td>"+t.low+"</td>"))
-				tr.append($("<td>"+t.vol+"</td>"))
-				$("#ticker").append(tr);
-			}
+		type: 'GET',
+		url: conf.url,
+		data: conf.params,
+		dataType: 'json',
+		success: function (data) {
+			var res = conf.getResponse(data);
+			showTicker(conf,res);
+		}
 	});
 }
 
-function getBterTicker(){
-	$.ajax({
-			type: 'GET',
-			url: "https://bter.com/api/1/ticker/ltc_cny",
-			dataType: 'json',
-			success: function (data) {
-				var t=data;
-				var tr = $("<tr></tr>");
-				tr.append($("<td>Bter</td>"))
-				tr.append($("<td>"+t.last+"</td>"))
-				tr.append($("<td>"+t.buy+"</td>"))
-				tr.append($("<td>"+t.sell+"</td>"))
-				tr.append($("<td>"+t.high+"</td>"))
-				tr.append($("<td>"+t.low+"</td>"))
-				tr.append($("<td>"+t.vol_ltc+"</td>"))
-				$("#ticker").append(tr);
-			}
-	});
+function showTicker(conf,res){
+	for(var i in res){
+		$("#"+conf.name+" ."+i).text(res[i]);
+	}
 }
 
-function getFXBTCTicker(){
-	$.ajax({
-			type: 'GET',
-			url: "https://data.fxbtc.com/api",
-			data: {"op":"query_ticker","symbol":"ltc_cny"},
-			dataType: 'json',
-			success: function (data) {
-				var t=data.ticker;
-				var tr = $("<tr></tr>");
-				tr.append($("<td>FXBTC</td>"))
-				tr.append($("<td>"+t.last_rate+"</td>"))
-				tr.append($("<td>"+t.bid+"</td>"))
-				tr.append($("<td>"+t.ask+"</td>"))
-				tr.append($("<td>"+t.high+"</td>"))
-				tr.append($("<td>"+t.low+"</td>"))
-				tr.append($("<td>"+t.vol+"</td>"))
-				$("#ticker").append(tr);
-			}
-	});
-}
-
+var config = [{
+	name:"OKCoin",
+	site:"http://www.okcoin.com/",
+	url:"https://www.okcoin.com/api/ticker.do",
+	params:{"symbol":"ltc_cny"},
+	getResponse:function(data){
+		return data.ticker;
+	}
+},{
+	name:"BTER",
+	site:"http://bter.com/",
+	url:"https://bter.com/api/1/ticker/ltc_cny",
+	getResponse:function(data){
+		return $.extend(data,{"vol":data.vol_ltc});
+	}
+},{
+	name:"FXBTC",
+	site:"http://data.fxbtc.com/",
+	url:"https://data.fxbtc.com/api",
+	params:{"op":"query_ticker","symbol":"ltc_cny"},
+	getResponse:function(data){
+		var data = data.ticker;
+		return $.extend(data,{"last":data.last_rate,"buy":data.bid,"sell":data.ask});
+	}
+}]

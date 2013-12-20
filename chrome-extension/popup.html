@@ -4,7 +4,7 @@
   <script src="popup.js"></script>
 </head>
 <body style="width: 600px">
-	<table id="ticker" style='width:100%;text-align:center;font-size:12px;'>
+	<table id="ticker">
 		<tr>
 			<th style="width:15%;">平台</td>
 			<th style="width:12%;">最新成交价</td>
@@ -16,4 +16,9 @@
 		</tr>
 	</table>
 </body>
+<style>
+#ticker{width:100%;text-align:center;font-size:12px;border-collapse:collapse;}
+#ticker th,td{border:1px solid #000;}
+.vol{text-align:right;}
+</style>
 </html>
